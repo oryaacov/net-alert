@@ -3,6 +3,7 @@ package db
 import (
 	"net-alert/pkg/config"
 	"net-alert/pkg/logging"
+	"net-alert/pkg/sniffer"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -16,7 +17,7 @@ func InitDB(config *config.Configuration) *gorm.DB {
 	if err != nil {
 		logging.LogFatal(err)
 	}
-	createDBIfNotExists()
+	createTables(db)
 	return db
 }
 
@@ -25,6 +26,9 @@ func CloseDBConnection(db *gorm.DB) {
 	db.Close()
 }
 
-func createDBIfNotExists() {
-
+func createTables(db *gorm.DB) {
+	ipv4 := &sniffer.IPV4Record{Src: "127.0.0.1", Dst: "31.13.22.44"}
+	if !db.HasTable(ipv4) {
+		db.CreateTable(ipv4)
+	}
 }

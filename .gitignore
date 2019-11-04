@@ -17,3 +17,4 @@ vendor/
 configs/*.json
 go.sum
 main
+.vscode/launch.json

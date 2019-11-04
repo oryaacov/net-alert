@@ -13,10 +13,16 @@ type Configuration struct {
 		Driver           string `json:"driver"`
 	} `json:"DB"`
 	Log struct {
-		LogToConsole bool   `json:"logToConsole"`
 		LogFilePath  string `json:"logFilePath"`
-		LogLevel     string `json:"LogLevel"`
+		LogLevel     string `json:"logLevel"`
+		LogToConsole bool   `json:"logToConsole"`
 	} `json:"Log"`
+	Sniffer struct {
+		Device      string `json:"Device"`
+		Promiscuous bool   `json:"Promiscuous"`
+		SnapshotLen int32  `json:"SnapshotLen"`
+		Timeout     int    `json:"Timeout"`
+	} `json:"Sniffer"`
 	WebServer struct {
 		AllowedHeaders      string `json:"AllowedHeaders"`
 		AllowedMethods      string `json:"AllowedMethods"`

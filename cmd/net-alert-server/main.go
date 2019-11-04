@@ -2,7 +2,6 @@ package main
 
 import (
 	"net-alert/pkg/server"
-	"net-alert/pkg/sniffer"
 	"os"
 )
 
@@ -11,6 +10,5 @@ func main() {
 		panic("No device name")
 	}
 	var server server.Server
-	go sniffer.GetData()
 	server.Start(os.Args[1])
 }
