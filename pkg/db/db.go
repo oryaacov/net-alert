@@ -2,6 +2,7 @@ package db
 
 import (
 	"net-alert/pkg/config"
+	"net-alert/pkg/dm"
 	"net-alert/pkg/logging"
 	"net-alert/pkg/sniffer"
 
@@ -27,8 +28,12 @@ func CloseDBConnection(db *gorm.DB) {
 }
 
 func createTables(db *gorm.DB) {
+	profile := &dm.Profile{}
 	ipv4 := &sniffer.IPV4Record{Src: "127.0.0.1", Dst: "31.13.22.44"}
 	if !db.HasTable(ipv4) {
 		db.CreateTable(ipv4)
+	}
+	if !db.HasTable(profile) {
+		db.CreateTable(profile)
 	}
 }

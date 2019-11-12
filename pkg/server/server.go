@@ -34,7 +34,7 @@ func (s *Server) Start(path string) {
 	s.InitSniffer()
 	defer s.Sniffer.Handler.Close()
 	fmt.Println("done!\ninit http-server...")
-	go s.Sniffer.Start(s.DB)
+	go s.Sniffer.Analyze(s.DB)
 	s.InitGin()
 }
 
@@ -65,7 +65,7 @@ func (s *Server) InitGin() {
 
 	router.StaticFS(fmt.Sprintf("/%s", s.Config.WebServer.SiteURL), http.Dir(s.Config.WebServer.StaticFilesLocation))
 
-	router.GET("/isAlive", s.IsAlive())
-
+	router.GET("/isalive", s.IsAlive())
+	router.POST("/api/profile", s.CreateOrUpdateProfile())
 	router.Run(fmt.Sprintf("%s:%d", s.Config.WebServer.URL, s.Config.WebServer.Port))
 }
