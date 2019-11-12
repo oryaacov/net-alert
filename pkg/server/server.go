@@ -15,6 +15,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//Server represnt the project core objects at one place
 type Server struct {
 	Config  *config.Configuration
 	DB      *gorm.DB
@@ -22,6 +23,7 @@ type Server struct {
 	Sniffer *sniffer.Sniffer
 }
 
+//Start runs the net-alert web server application
 func (s *Server) Start(path string) {
 	fmt.Println("starting net-alert...\nreading configuraion file...")
 	s.Config = config.ReadConfigutionFromFile(path)
