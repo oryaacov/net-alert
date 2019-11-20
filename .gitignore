@@ -18,3 +18,4 @@ configs/*.json
 go.sum
 main
 .vscode/launch.json
+net-alert

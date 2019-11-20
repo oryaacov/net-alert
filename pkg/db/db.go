@@ -27,6 +27,15 @@ func CloseDBConnection(db *gorm.DB) {
 	db.Close()
 }
 
+//GetAllProfiles query with a simple get all query all of the profiles
+func GetAllProfiles(db *gorm.DB) ([]dm.Profile, error) {
+	profiles := []dm.Profile{}
+	if result := db.Find(&profiles); result.Error != nil {
+		return nil, result.Error
+	}
+	return profiles, nil
+}
+
 func createTables(db *gorm.DB) {
 	profile := &dm.Profile{}
 	ipv4 := &sniffer.IPV4Record{Src: "127.0.0.1", Dst: "31.13.22.44"}
