@@ -4,7 +4,6 @@ import (
 	"net-alert/pkg/config"
 	"net-alert/pkg/dm"
 	"net-alert/pkg/logging"
-	"net-alert/pkg/sniffer"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -38,11 +37,16 @@ func GetAllProfiles(db *gorm.DB) ([]dm.Profile, error) {
 
 func createTables(db *gorm.DB) {
 	profile := &dm.Profile{}
-	ipv4 := &sniffer.IPV4Record{Src: "127.0.0.1", Dst: "31.13.22.44"}
+	site := &dm.Site{}
+	ipv4 := &dm.IPV4Record{}
+	if !db.HasTable(site) {
+		db.CreateTable(site)
+	}
 	if !db.HasTable(ipv4) {
 		db.CreateTable(ipv4)
 	}
 	if !db.HasTable(profile) {
 		db.CreateTable(profile)
 	}
+	db.AutoMigrate(ipv4, site, profile)
 }
