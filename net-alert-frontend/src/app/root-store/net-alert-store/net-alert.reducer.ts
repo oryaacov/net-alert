@@ -13,18 +13,11 @@ export const initialState: NetAlertState = {
 
 export const netAlertReducer = createReducer<NetAlertState | undefined>(
   initialState,
-  on(NetAlertActions.loadProfilesSuccess, (state, { payload }) =>{return {...state,Profiles:payload}})
-);
+  on(NetAlertActions.getAllProfiles, (state) =>{return {...state,isLoading:true,error:null}}),
+  on(NetAlertActions.getNetworkInfo, (state) =>{return {...state,isLoading:true,error:null}}),
+  on(NetAlertActions.loadProfilesSuccess, (state, { payload }) =>{return {...state,Profiles:payload,isLoading:false,error:null}}),
+  on(NetAlertActions.loadNetworkInfoSuccess, (state, { payload }) =>{return {...state,NetworkInfo:payload,isLoading:false,error:null}}),
+  on(NetAlertActions.loadProfilesFailure, (state, { error }) =>{return{...state,isLoading:false,error:error}}),
+  on(NetAlertActions.loadNetworkInfoFailure, (state, { error }) =>{return {...state,isLoading:false,error:error}}),
+  );
 
-  
-// export const reducer = createReducer(
-//   initialState,
-//   on(NetAlertActions.getAllProfiles,state => ({...state,isLoading:true})),
-//   on(NetAlertActions.loadProfilesSuccess,(state,{payload})=>{console.log(payload);return {...state,Profiles:payload,isLoading:false}})
-  
-// );
-
-// export function NetAlertReducer(state: NetAlertState | undefined, action: Action) {
-//   console.log("ASdfasdf")
-//   return reducer(state, action);
-//   }

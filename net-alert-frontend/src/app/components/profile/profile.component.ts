@@ -14,7 +14,6 @@ import { AppStates } from 'src/app/root-store/root-state';
 export class ProfileComponent implements OnInit {
   network$: any;
   profiles$: any;
-  todo$: Observable<NetAlertState>;
   constructor(private store: Store<AppStates>) { 
   }
 
@@ -22,7 +21,7 @@ export class ProfileComponent implements OnInit {
     console.log(this.store)
     this.store.dispatch({ type: '[Profile Component] getAllProfiles' });
     this.store.dispatch({ type: '[Profile Component] getNetworkInfo' });
-    // this.network$ = this.store.select(selectNetworkInfo);
+    this.network$ = this.store.select(r=>r.netAlert.NetworkInfo);
     this.profiles$=this.store.select(r=>r.netAlert.Profiles)
    }
 }

@@ -11,7 +11,7 @@ export interface NetAlertState{
 }
 
 export interface NetworkCard {
-  Name: string;
+  Name: string; 
   Mac: string;
 }
 

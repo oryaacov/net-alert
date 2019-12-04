@@ -11,7 +11,10 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ProfileContainerComponent } from './containers/profile-container/profile-container.component';
 import { RootStoreModule } from './root-store/root-store.module';
 import { environment } from 'src/environments/environment';
-import { reducers, metaReducers} from './root-store/root-state';
+import { reducers} from './root-store/root-state';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxLoadingModule } from 'ngx-loading';
+import { ToastrModule } from 'ngx-toastr';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,6 +24,9 @@ import { reducers, metaReducers} from './root-store/root-state';
   imports: [
     HttpClientModule,
     BrowserModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({timeOut:3000,positionClass:'toast-bottem-left'}),
+    NgxLoadingModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
      EffectsModule.forRoot([NetAlertEffects]),

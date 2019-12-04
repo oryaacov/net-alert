@@ -19,3 +19,4 @@ go.sum
 main
 .vscode/launch.json
 net-alert
+net-alert-frontend/package-lock.json
