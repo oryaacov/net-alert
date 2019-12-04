@@ -31,10 +31,10 @@ func (s *Server) Start(path string) {
 	s.DB = db.InitDB(s.Config)
 	defer s.DB.Close()
 	fmt.Println("done!\ninit sniffer & opening pcap...")
-	//	s.InitSniffer()
-	//	defer s.Sniffer.Handler.Close()
+	//s.InitSniffer()
+	//defer s.Sniffer.Handler.Close()
 	fmt.Println("done!\ninit http-server...")
-	//	go s.Sniffer.Analyze(s.DB)
+	//go s.Sniffer.Analyze(s.DB)
 	s.InitGin()
 }
 
@@ -65,10 +65,9 @@ func (s *Server) InitGin() {
 
 	router.StaticFS(fmt.Sprintf("/%s", s.Config.WebServer.SiteURL), http.Dir(s.Config.WebServer.StaticFilesLocation))
 
-	router.GET("/isalive", s.IsAlive())
-	router.GET("/api/network", s.GetNetworkCardsInfo())
+	router.GET("/api/alive", s.IsAlive())
+	router.GET("/api/network", s.GetNetworkInfo())
 	router.GET("/api/profiles", s.GetAllProfiles())
-	router.GET("/api/network/gateway", s.GetGatewayInfo())
 	router.POST("/api/profile", s.CreateOrUpdateProfile())
 	router.Run(fmt.Sprintf("%s:%d", s.Config.WebServer.URL, s.Config.WebServer.Port))
 }

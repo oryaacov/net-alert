@@ -1,0 +1,4 @@
+<div *ngFor="let profile of profiles$ | async">
+    {{ profile|json }}
+</div>
+{{ network$|async | json}}

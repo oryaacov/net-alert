@@ -1,13 +1,11 @@
 package server
 
 import (
-	"fmt"
 	"net-alert/pkg/db"
 	"net-alert/pkg/dm"
 	"net-alert/pkg/logging"
 	"net-alert/pkg/sniffer"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,26 +44,38 @@ func (s *Server) GetAllProfiles() gin.HandlerFunc {
 	}
 }
 
-//GetNetworkCardsInfo return the machine's network cards information
-func (s *Server) GetNetworkCardsInfo() gin.HandlerFunc {
+//GetNetworkInfo return the machine's network cards, Service set and gateway information
+func (s *Server) GetNetworkInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if devices, err := sniffer.GetLinuxNetworkCardsNameAndMac(); err != nil {
+		if info, err := sniffer.GetNetworkInfo(); err != nil {
 			logging.LogError(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 		} else {
-			c.Data(http.StatusOK, "text/html", []byte(strings.Join(devices, ",")))
+			c.JSON(http.StatusOK, info)
 		}
 	}
 }
 
-//GetGatewayInfo return the default mac address information
-func (s *Server) GetGatewayInfo() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if ip, mac, err := sniffer.GetDefualtGetwayMacAddresss(); err != nil {
-			logging.LogError(err)
-			c.AbortWithStatus(http.StatusInternalServerError)
-		} else {
-			c.Data(http.StatusOK, "text/html", []byte(fmt.Sprintf("%s,%s", ip, mac)))
-		}
-	}
-}
+// //GetGatewayInfo return the default mac address information
+// func (s *Server) GetGatewayInfo() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if ip, mac, err := sniffer.GetDefualtGetwayMacAddresss(); err != nil {
+// 			logging.LogError(err)
+// 			c.AbortWithStatus(http.StatusInternalServerError)
+// 		} else {
+// 			c.Data(http.StatusOK, "text/html", []byte(fmt.Sprintf("%s,%s", ip, mac)))
+// 		}
+// 	}
+// }
+
+// //GetServiceSetInfo returns the current network ssid and bssid
+// func (s *Server) GetServiceSetInfo() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if ssid, bssid, err := sniffer.GetCurrentSSIDAndBSSID(); err != nil {
+// 			logging.LogError(err)
+// 			c.AbortWithStatus(http.StatusInternalServerError)
+// 		} else {
+// 			c.Data(http.StatusOK, "text/html", []byte(fmt.Sprintf("%s,%s", ssid, bssid)))
+// 		}
+// 	}
+// }
