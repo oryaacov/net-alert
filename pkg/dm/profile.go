@@ -6,6 +6,18 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//Owner the machine owner (only one master per machine)
+type Owner struct {
+	Mac            string `gorm:"primary_key"`
+	Nickname       string
+	IP             string
+	Email          string
+	Phone          string
+	GetEmailAlerts bool
+	GetSMSAlerts   bool
+	LastLoginTime  time.Time
+}
+
 //Profile a someone on the network with a known mac address
 type Profile struct {
 	Mac        string `gorm:"primary_key"`

@@ -35,10 +35,23 @@ func GetAllProfiles(db *gorm.DB) ([]dm.Profile, error) {
 	return profiles, nil
 }
 
+//GetOwner return the first (and should be only) DB row
+func GetOwner(db *gorm.DB) (*dm.Owner, error) {
+	owner := &dm.Owner{}
+	if result := db.First(owner); result.Error != nil {
+		return nil, result.Error
+	}
+	return owner, nil
+}
+
 func createTables(db *gorm.DB) {
 	profile := &dm.Profile{}
 	site := &dm.Site{}
 	ipv4 := &dm.IPV4Record{}
+	owner := &dm.Owner{}
+	if !db.HasTable(owner) {
+		db.CreateTable(owner)
+	}
 	if !db.HasTable(site) {
 		db.CreateTable(site)
 	}

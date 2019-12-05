@@ -66,6 +66,7 @@ func (s *Server) InitGin() {
 	router.StaticFS(fmt.Sprintf("/%s", s.Config.WebServer.SiteURL), http.Dir(s.Config.WebServer.StaticFilesLocation))
 
 	router.GET("/api/alive", s.IsAlive())
+	router.GET("/api/master", s.GetOwnerInfo())
 	router.GET("/api/network", s.GetNetworkInfo())
 	router.GET("/api/profiles", s.GetAllProfiles())
 	router.POST("/api/profile", s.CreateOrUpdateProfile())

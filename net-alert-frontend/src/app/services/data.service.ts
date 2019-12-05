@@ -13,6 +13,10 @@ export class DataService {
     return this.http.get(environment.baseURL+'/profiles');
   }
 
+  getOwner() {
+    return this.http.get(environment.baseURL+'/master');
+  }
+
   getNetworkInfo() {
     return this.http.get(environment.baseURL+'/network');
   }

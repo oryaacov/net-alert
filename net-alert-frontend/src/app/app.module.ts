@@ -14,16 +14,27 @@ import { environment } from 'src/environments/environment';
 import { reducers} from './root-store/root-state';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxLoadingModule } from 'ngx-loading';
+import { MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule } from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
+import { OwnerComponent } from './components/owner/owner.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
     ProfileContainerComponent,
-    ProfileComponent
+    ProfileComponent,
+    OwnerComponent
   ],
   imports: [
     HttpClientModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    FormsModule,
     BrowserModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatCheckboxModule,
+    MatInputModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot({timeOut:3000,positionClass:'toast-bottem-left'}),
     NgxLoadingModule,

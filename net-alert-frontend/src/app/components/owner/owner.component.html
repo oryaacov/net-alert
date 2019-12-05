@@ -1,0 +1,32 @@
+<div>
+    <mat-card>
+        <mat-card-title>Owner
+        </mat-card-title>
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)">
+            <label>last loged in at {{owner?owner.LastLoginTime:""}}</label>
+            <div>
+                <mat-form-field class="form-element">
+                    <input matInput placeholder="Nickname" formControlName="Nickname">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field class="form-element">
+                    <input matInput placeholder="Email" formControlName="Email">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field class="form-element">
+                    <input matInput placeholder="Phone" formControlName="Phone">
+                </mat-form-field>
+            </div>
+            <div>My MAC:{{owner?owner.Mac:""}}</div>
+            <div>My IP:{{owner?owner.IP:""}}</div>
+            <div class="form-element">
+                <mat-checkbox matInputformControlName="GetEmailAlerts">Get Email Alerts</mat-checkbox>
+            </div>
+            <div class="form-element">
+                <mat-checkbox matInput formControlName="GetSMSAlerts">Get SMS Alerts</mat-checkbox>
+            </div>
+        </form>
+    </mat-card>
+</div>

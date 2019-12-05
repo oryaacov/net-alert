@@ -20,6 +20,17 @@ export class NetAlertEffects {
       )
     )
   );
+  loadOwner$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(NetAlertActions.getOwnerInfo),
+      mergeMap(() => this.dataService.getOwner()
+        .pipe(
+          map(NetAlertActions.loadOwnerSuccess),
+          catchError(() => of(NetAlertActions.loadOwnerFailure))
+        )
+      )
+    )
+  );
 
   loadNetworkInfo$ = createEffect(() =>
     this.actions$.pipe(

@@ -19,8 +19,10 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.store)
+    setTimeout(() => {
     this.store.dispatch({ type: '[Profile Component] getAllProfiles' });
     this.store.dispatch({ type: '[Profile Component] getNetworkInfo' });
+    }, 0);
     this.network$ = this.store.select(r=>r.netAlert.NetworkInfo);
     this.profiles$=this.store.select(r=>r.netAlert.Profiles)
    }

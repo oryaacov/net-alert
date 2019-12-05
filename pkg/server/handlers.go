@@ -15,6 +15,19 @@ func (s *Server) IsAlive() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Data(http.StatusOK, "text/html", []byte(""))
 	}
+
+}
+
+//IsAlive returns "yes" if the server is up and running, part of DT standart
+func (s *Server) GetOwnerInfo() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if owner, err := db.GetOwner(s.DB); err != nil {
+			logging.LogError(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, owner)
+		}
+	}
 }
 
 //CreateOrUpdateProfile create or update mac profile

@@ -7,6 +7,7 @@ export interface NetAlertState{
   isLoading: boolean;
   error: any;
   NetworkInfo?: NetworkInfo;
+  Owner?:Owner;
   Profiles?: Profile[];
 }
 
@@ -14,7 +15,16 @@ export interface NetworkCard {
   Name: string; 
   Mac: string;
 }
-
+export interface Owner {
+  Mac: string;
+  NickName: string;
+  IP: string;
+  Email: string;
+  Phone: string;
+  GetEmailAlerts: boolean;
+  GetSMSAlerts: boolean;
+  LastLoginTime: Date;
+}
 export interface NetworkInfo {
   SSID: string;
   BSSID: string;
