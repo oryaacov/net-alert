@@ -23,7 +23,7 @@ type Profile struct {
 	Mac        string `gorm:"primary_key"`
 	NickName   string
 	CreateDate time.Time
-	Sites      []Site
+	Sites      []Site `gorm:"foreignkey:profile_id"`
 }
 
 //CreateOrUpdate insert in case of a new user or update an existing one

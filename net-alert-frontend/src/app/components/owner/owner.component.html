@@ -1,32 +1,45 @@
 <div>
-    <mat-card>
-        <mat-card-title>Owner
+    <mat-card *ngIf="owner" class="owner-card">
+        <mat-card-title class="title">Owner
         </mat-card-title>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)">
-            <label>last loged in at {{owner?owner.LastLoginTime:""}}</label>
-            <div>
+            <mat-list-item>
+                <span class="header">last login:</span>
+                <span class="value">{{owner.LastLoginTime|date:'short'}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">My MAC:</span>
+                <span class="value">{{owner.Mac}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">My IP:</span>
+                <span class="value">{{owner.IP}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
                 <mat-form-field class="form-element">
                     <input matInput placeholder="Nickname" formControlName="Nickname">
                 </mat-form-field>
-            </div>
-            <div>
+            </mat-list-item>
+            <mat-list-item>
                 <mat-form-field class="form-element">
                     <input matInput placeholder="Email" formControlName="Email">
                 </mat-form-field>
-            </div>
-            <div>
+            </mat-list-item>
+            <mat-list-item>
                 <mat-form-field class="form-element">
                     <input matInput placeholder="Phone" formControlName="Phone">
                 </mat-form-field>
-            </div>
-            <div>My MAC:{{owner?owner.Mac:""}}</div>
-            <div>My IP:{{owner?owner.IP:""}}</div>
-            <div class="form-element">
-                <mat-checkbox matInputformControlName="GetEmailAlerts">Get Email Alerts</mat-checkbox>
-            </div>
-            <div class="form-element">
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item class="middle">
+                <mat-checkbox matInput formControlName="GetEmailAlerts">Get Email Alerts</mat-checkbox>
+            </mat-list-item>
+            <mat-list-item class="middle">
                 <mat-checkbox matInput formControlName="GetSMSAlerts">Get SMS Alerts</mat-checkbox>
-            </div>
+            </mat-list-item>
         </form>
     </mat-card>
 </div>

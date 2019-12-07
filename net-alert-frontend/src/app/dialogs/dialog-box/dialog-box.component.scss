@@ -1,0 +1,71 @@
+.dialog-box {
+  width: 40rem;
+  height: 25rem;
+  max-width: 40rem;
+  max-height: 25rem;
+}
+
+.middle {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.dialog-buttons {
+  text-align: center;
+  display: block;
+}
+
+.cell {
+  text-align: center;
+  margin: 1rem;
+}
+
+mat-header-cell,
+mat-cell {
+  justify-content: center;
+  flex: 0 0 200px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: lightgrey;
+}
+
+/* offsets the header by the same amount of size/padding the sort button occupies */
+.mat-sort-header-container {
+  margin-left: 18px;
+}
+
+.mat-row,
+.mat-header-row {
+  border-bottom-width: 0px;
+}
+
+.mat-sort-header-container {
+  display: flex;
+  justify-content: center;
+}
+
+.table-holder {
+  text-align: right;
+}
+
+::ng-deep .mat-tab-body-content{
+    text-align: right !important;
+}
+
+.add-button {
+  background-color: transparent;
+  color: black;
+  display: contents;
+  cursor: pointer;
+}
+
+::ng-deep th.mat-header-cell {
+  text-align: center !important;
+  padding: 1rem;
+}
+
+td.mat-cell,
+td.mat-footer-cell,
+th.mat-header-cell {
+  padding: 1rem !important;
+}

@@ -14,22 +14,31 @@ import { environment } from 'src/environments/environment';
 import { reducers} from './root-store/root-state';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxLoadingModule } from 'ngx-loading';
-import { MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule } from '@angular/material';
+import { MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatListModule, MatTableModule, MatDialogModule, MatTabsModule, MatIconModule } from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
 import { OwnerComponent } from './components/owner/owner.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MyNetworkComponent } from './components/my-network/my-network.component';
+import { DialogBoxComponent } from './dialogs/dialog-box/dialog-box.component';
 @NgModule({
   declarations: [
     AppComponent,
     ProfileContainerComponent,
     ProfileComponent,
-    OwnerComponent
+    OwnerComponent,
+    MyNetworkComponent,
+    DialogBoxComponent
   ],
   imports: [
     HttpClientModule,
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatListModule,
     FormsModule,
+    MatTabsModule,
+    MatIconModule,
+    MatTableModule,
+    MatDialogModule,
     BrowserModule,
     MatCardModule,
     MatFormFieldModule,
@@ -48,6 +57,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     RootStoreModule
   ],
   providers: [],
+  entryComponents:[DialogBoxComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

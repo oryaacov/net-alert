@@ -29,7 +29,7 @@ func CloseDBConnection(db *gorm.DB) {
 //GetAllProfiles query with a simple get all query all of the profiles
 func GetAllProfiles(db *gorm.DB) ([]dm.Profile, error) {
 	profiles := []dm.Profile{}
-	if result := db.Find(&profiles); result.Error != nil {
+	if result := db.Preload("Sites").Find(&profiles); result.Error != nil {
 		return nil, result.Error
 	}
 	return profiles, nil

@@ -1,0 +1,27 @@
+.owner-card {
+  display: inline-block;
+}
+.title {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-holder {
+  text-align: right;
+}
+
+.add-button {
+  background-color: transparent;
+  color: black;
+  display: contents;
+  cursor: pointer;
+}
+
+::ng-deep th.mat-header-cell{
+    text-align: center !important;
+    padding:1rem;
+}
+
+td.mat-cell, td.mat-footer-cell, th.mat-header-cell{
+    padding: 1rem !important;
+}

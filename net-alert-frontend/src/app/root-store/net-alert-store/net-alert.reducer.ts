@@ -20,7 +20,7 @@ export const netAlertReducer = createReducer<NetAlertState | undefined>(
   on(NetAlertActions.loadProfilesSuccess, (state, { payload }) => { return { ...state, Profiles: payload, isLoading: false, error: null } }),
   on(NetAlertActions.loadNetworkInfoSuccess, (state, { payload }) => { return { ...state, NetworkInfo: payload, isLoading: false, error: null } }),
   on(NetAlertActions.loadOwnerSuccess, (state, { payload }) => {return { ...state, Owner: payload, isLoading: false, error: null } }),
-  on(NetAlertActions.loadProfilesFailure, (state, { error }) => { return { ...state, isLoading: false, error: error } }),
+  on(NetAlertActions.loadProfilesFailure, (state, { error }) => { return  { ...state, isLoading: false, error: error } }),
   on(NetAlertActions.loadNetworkInfoFailure, (state, { error }) => { return { ...state, isLoading: false, error: error } }),
   on(NetAlertActions.loadOwnerFailure, (state, { error }) => { return { ...state, isLoading: false, error: error } }),
 

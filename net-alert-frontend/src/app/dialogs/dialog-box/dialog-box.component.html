@@ -1,0 +1,64 @@
+<h1 mat-dialog-title>Row Action: <strong>{{action}}</strong></h1>
+<div mat-dialog-content [ngClass]="{'dialog-box': action!='Delete'}">
+    <div *ngIf="action != 'Delete'; else elseTemplate">
+        <mat-tab-group class="dialog-box">
+            <mat-tab label="Profile">
+                <div style="margin:5rem">
+                    <div class="middle">
+                        <mat-form-field>
+                            <input placeholder="{{action}} Mac" matInput [(ngModel)]="local_data.Mac">
+                        </mat-form-field>
+                    </div>
+                    <div class="middle">
+                        <mat-form-field>
+                            <input placeholder="{{action}} Name" matInput [(ngModel)]="local_data.NickName">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </mat-tab>
+            
+            <mat-tab label="Sites" class="table-holder">
+                <button class="add-button"  (click)="addSite()" ><mat-icon>add</mat-icon></button>
+                <table mat-table [dataSource]="local_data.Sites" #mytable class="my-table mat-elevation-z8">
+                    <ng-container matColumnDef="mac">
+                        <th mat-header-cell *matHeaderCellDef  class="cell"> Name </th>
+                        <td mat-cell *matCellDef="let element;let i = index"  class="cell">
+                            <input placeholder="{{action}} Name" [(ngModel)]="local_data.Sites[i].Nickname"
+                                matInput="element.Nickname">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="ip">
+                        <th mat-header-cell *matHeaderCellDef  class="cell"> IP Address </th>
+                        <td mat-cell *matCellDef="let element;let i = index"  class="cell">
+                            <input placeholder="{{action}}  IP Address" [(ngModel)]="local_data.Sites[i].IP"
+                                matInput="element.IP">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef  class="cell"> Domain </th>
+                        <td mat-cell *matCellDef="let element;let i = index"  class="cell">
+                            <input placeholder="{{action}} IP Address" [(ngModel)]="local_data.Sites[i].Domain"
+                                matInput="element.Domain">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef class="cell"> Action </th>
+                        <td  mat-cell *matCellDef="let element;let i = index"  class="cell">
+                            <label (click)="deleteItem(element)">Delete</label>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <ng-template #elseTemplate>
+        Sure to delete <b>{{local_data.name}}</b>?
+    </ng-template>
+
+</div>
+<div mat-dialog-actions class="dialog-buttons">
+    <button mat-button (click)="doAction()">{{action}}</button>
+    <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+</div>

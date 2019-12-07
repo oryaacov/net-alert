@@ -1,0 +1,38 @@
+<div class="card">
+    <mat-card>
+            <mat-card-title class="title">My Network
+                </mat-card-title>
+        <mat-list *ngIf="networkInfo!=null">
+            <mat-list-item>
+                <span class="header">SSID:</span>
+                <span class="value">{{networkInfo.SSID}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">BSSID:</span>
+                <span  class="value">{{networkInfo.BSSID}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">Gateway IP:</span>
+                <span  class="value">{{networkInfo.GatewayIP}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">Gateway Mac:</span>
+                <span  class="value">{{networkInfo.GatewayMAC}}</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <span class="header">Network cards:</span>
+               <div  class="value">
+                <ul>
+                <li *ngFor="let networkCard of networkInfo.NetworkCards;">
+                    {{networkCard.Name}} -  {{networkCard.Mac}}
+                </li>
+                </ul>    
+            </div>
+            </mat-list-item>
+        </mat-list>
+    </mat-card>
+</div>
