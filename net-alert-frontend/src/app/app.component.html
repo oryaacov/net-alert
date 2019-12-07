@@ -1,6 +1,21 @@
-<ngx-loading [show]="isLoading$" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<app-my-network></app-my-network>
-<app-profile></app-profile>
-<app-owner></app-owner>
-<app-profile-container></app-profile-container>
-<router-outlet></router-outlet>
+<ngx-loading [show]="isLoading$" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<div class="image">
+    <mat-toolbar class="app-title" style="text-align: center;display: block;">
+        <img class="logo" width="200rem" src="/assets/logo2.png">
+    </mat-toolbar>
+    <div cdkDropList>
+        <mat-grid-list cols="3" rowHeight="1:1">
+            <mat-grid-tile>
+                <app-my-network></app-my-network>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <app-profile></app-profile>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <app-owner></app-owner>
+            </mat-grid-tile>
+            <router-outlet></router-outlet>
+
+        </mat-grid-list>
+    </div>
+</div>

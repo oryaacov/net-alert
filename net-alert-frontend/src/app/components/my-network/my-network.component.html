@@ -1,7 +1,10 @@
-<div class="card">
+<div class="card" cdkDrag>
     <mat-card>
-            <mat-card-title class="title">My Network
-                </mat-card-title>
+        <div class="pin-frame">
+            <img class="pin-image" src="assets//pin.jpg" width="50rem" height="50rem">
+        </div>
+        <mat-card-title class="title">My Network
+        </mat-card-title>
         <mat-list *ngIf="networkInfo!=null">
             <mat-list-item>
                 <span class="header">SSID:</span>
@@ -10,28 +13,28 @@
             <mat-divider></mat-divider>
             <mat-list-item>
                 <span class="header">BSSID:</span>
-                <span  class="value">{{networkInfo.BSSID}}</span>
+                <span class="value">{{networkInfo.BSSID}}</span>
             </mat-list-item>
             <mat-divider></mat-divider>
             <mat-list-item>
                 <span class="header">Gateway IP:</span>
-                <span  class="value">{{networkInfo.GatewayIP}}</span>
+                <span class="value">{{networkInfo.GatewayIP}}</span>
             </mat-list-item>
             <mat-divider></mat-divider>
             <mat-list-item>
                 <span class="header">Gateway Mac:</span>
-                <span  class="value">{{networkInfo.GatewayMAC}}</span>
+                <span class="value">{{networkInfo.GatewayMAC}}</span>
             </mat-list-item>
             <mat-divider></mat-divider>
             <mat-list-item>
                 <span class="header">Network cards:</span>
-               <div  class="value">
-                <ul>
-                <li *ngFor="let networkCard of networkInfo.NetworkCards;">
-                    {{networkCard.Name}} -  {{networkCard.Mac}}
-                </li>
-                </ul>    
-            </div>
+                <div class="value">
+                    <ul>
+                        <li *ngFor="let networkCard of networkInfo.NetworkCards;">
+                            {{networkCard.Name}} - {{networkCard.Mac}}
+                        </li>
+                    </ul>
+                </div>
             </mat-list-item>
         </mat-list>
     </mat-card>

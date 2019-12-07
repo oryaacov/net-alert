@@ -1,0 +1,14 @@
+.app-title {
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  width: 100%;
+  background-color: transparent;
+  display: block;
+  display: grid;
+  font-size: xx-large;
+}
+
+::ng-deep .mat-grid-tile {
+  overflow: visible !important;
+}

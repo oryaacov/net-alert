@@ -1,5 +1,8 @@
-<div>
+<div class="example-box" cdkDrag>
     <mat-card *ngIf="owner" class="owner-card">
+        <div class="pin-frame">
+            <img class="pin-image" src="assets//pin.jpg" width="50rem" height="50rem">
+        </div>
         <mat-card-title class="title">Owner
         </mat-card-title>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup.value)">

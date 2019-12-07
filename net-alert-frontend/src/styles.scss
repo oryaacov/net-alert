@@ -2,7 +2,10 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 /* position */
 body{
-    background-color:#000;
+    background-size:cover; width:auto;
+    background-image:url('/assets/bg5.jpg');
+    background-position:50% 50%;
+    opacity: 0.9;
 }
 .toast-center-center {
     top: 50%;
@@ -193,4 +196,6 @@ body{
       width: 25em;
     }
   }
-  
+  .cdk-global-scrollblock {
+    position: initial !important;
+  }

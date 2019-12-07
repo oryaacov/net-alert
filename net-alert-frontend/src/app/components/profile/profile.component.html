@@ -1,10 +1,17 @@
-<div>
-    <mat-card  class="owner-card">
-        <mat-card-title class="title">Profiles
+<div cdkDrag>
+
+    <mat-card class="owner-card">
+        <div class="pin-frame">
+            <img class="pin-image" src="assets//pin.jpg" width="50rem" height="50rem">
+        </div>
+        <mat-card-title class="title"><span>Profiles</span>
+                <button class="add-button" (click)="openDialog('Add',{})">
+                        <mat-icon>add</mat-icon>
+                    </button>
         </mat-card-title>
         <div class="container table-holder">
-            <button class="add-button"  (click)="openDialog('Add',{})" ><mat-icon>add</mat-icon></button>
-            <table mat-table  #mytable class="my-table mat-elevation-z8">
+           
+            <table mat-table #mytable class="my-table mat-elevation-z8">
                 <ng-container matColumnDef="mac">
                     <th mat-header-cell *matHeaderCellDef> MAC </th>
                     <td mat-cell *matCellDef="let element"> {{element.Mac}} </td>
