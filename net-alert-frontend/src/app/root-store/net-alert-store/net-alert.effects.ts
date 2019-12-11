@@ -20,6 +20,19 @@ export class NetAlertEffects {
       )
     )
   );
+
+  updateProfiles$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(NetAlertActions.updateProfiles),
+      mergeMap(action => this.dataService.updateProfiles(action.payload)
+        .pipe(
+          map(NetAlertActions.updateProfilesSuccess),
+          catchError(() => of(NetAlertActions.updateProfileFailure))
+        )
+      )
+    )
+  );
+  
   loadOwner$ = createEffect(() =>
     this.actions$.pipe(
       ofType(NetAlertActions.getOwnerInfo),
@@ -27,6 +40,18 @@ export class NetAlertEffects {
         .pipe(
           map(NetAlertActions.loadOwnerSuccess),
           catchError(() => of(NetAlertActions.loadOwnerFailure))
+        )
+      )
+    )
+  );
+
+  updateOwner$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(NetAlertActions.updateOwnerInfo),
+      mergeMap(action => this.dataService.updateOwner(action.payload)
+        .pipe(
+          map(NetAlertActions.updateOwnerInfoSuccess),
+          catchError(() => of(NetAlertActions.updateOwnerFailure))
         )
       )
     )

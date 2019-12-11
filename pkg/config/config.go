@@ -22,6 +22,7 @@ type Configuration struct {
 		Promiscuous bool   `json:"Promiscuous"`
 		SnapshotLen int32  `json:"SnapshotLen"`
 		Timeout     int    `json:"Timeout"`
+		PcapsFolder string `json:"PcapsFolder"`
 	} `json:"Sniffer"`
 	WebServer struct {
 		AllowedHeaders      string `json:"AllowedHeaders"`

@@ -4,7 +4,7 @@ import {  Store } from '@ngrx/store';
 import { AppStates } from 'src/app/root-store/root-state';
 import { MatTable, MatDialog } from '@angular/material';
 import { DialogBoxComponent } from 'src/app/dialogs/dialog-box/dialog-box.component';
-
+import {updateProfiles} from '../../root-store/net-alert-store/net-alert.actions'
 
 @Component({
   selector: 'app-profile',
@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      let changed:boolean=true
       if (result.event == 'Add') {
         this.dataSource=[...this.dataSource,{...result.data}]
       } else if (result.event == 'Update') {
@@ -45,10 +46,13 @@ export class ProfileComponent implements OnInit {
         this.deleteRowData(result.data);
       }else{
         this.dataSource= [...JSON.parse(this.backup)]
+        changed=false;
       }
       this.table.dataSource=[...this.dataSource]
       this.table.renderRows()
-      
+      if (changed){
+        this.store.dispatch(updateProfiles(this.dataSource))
+      }  
     });
   }
 

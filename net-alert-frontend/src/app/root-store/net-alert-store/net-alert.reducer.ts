@@ -3,6 +3,7 @@ import { NetAlertState, Profile } from './net-alert.state'
 import * as NetAlertActions from './net-alert.actions'
 import { InjectionToken } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { state } from '@angular/animations';
 
 export const initialState: NetAlertState = {
   Profiles: null,
@@ -23,6 +24,11 @@ export const netAlertReducer = createReducer<NetAlertState | undefined>(
   on(NetAlertActions.loadProfilesFailure, (state, { error }) => { return  { ...state, isLoading: false, error: error } }),
   on(NetAlertActions.loadNetworkInfoFailure, (state, { error }) => { return { ...state, isLoading: false, error: error } }),
   on(NetAlertActions.loadOwnerFailure, (state, { error }) => { return { ...state, isLoading: false, error: error } }),
-
+  on(NetAlertActions.updateProfiles,(state)=>{return {...state,isLoading:true,error:null}}),
+  on(NetAlertActions.updateProfilesSuccess,(state)=>{return {...state,isLoading:false}}),
+  on(NetAlertActions.updateProfileFailure,(state,error)=>{return {...state,isLoading:false,error:error}}),
+  on(NetAlertActions.updateOwnerInfo,(state)=>{return {...state,isLoading:true,error:null}}),
+  on(NetAlertActions.updateOwnerInfoSuccess,(state)=>{return {...state,isLoading:false}}),
+  on(NetAlertActions.updateOwnerFailure,(state,error)=>{return {...state,isLoading:false,error:error}})
   );
 

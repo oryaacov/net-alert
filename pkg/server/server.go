@@ -31,10 +31,10 @@ func (s *Server) Start(path string) {
 	s.DB = db.InitDB(s.Config)
 	defer s.DB.Close()
 	fmt.Println("done!\ninit sniffer & opening pcap...")
-	//s.InitSniffer()
-	//defer s.Sniffer.Handler.Close()
+	s.InitSniffer()
+	defer s.Sniffer.Handler.Close()
 	fmt.Println("done!\ninit http-server...")
-	//go s.Sniffer.Analyze(s.DB)
+	go s.Sniffer.Analyze(s.DB, s.Config.Sniffer.PcapsFolder)
 	s.InitGin()
 }
 

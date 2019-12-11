@@ -6,6 +6,7 @@ type NetworkInfo struct {
 	BSSID        string
 	GatewayIP    string
 	GatewayMAC   string
+	NetworkPass  string
 	NetworkCards []NetworkCardInfo
 }
 

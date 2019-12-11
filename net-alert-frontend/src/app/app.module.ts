@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
 import { reducers } from './root-store/root-state';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxLoadingModule } from 'ngx-loading';
-import { MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatListModule, MatTableModule, MatDialogModule, MatTabsModule, MatIconModule, MatToolbarModule, MatGridListModule } from '@angular/material';
+import { MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatListModule, MatTableModule, MatDialogModule, MatTabsModule, MatIconModule, MatToolbarModule, MatGridListModule, MatButtonModule } from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
 import { OwnerComponent } from './components/owner/owner.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -37,6 +37,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     MatToolbarModule,
     MatFormFieldModule,
     MatListModule,
+    MatButtonModule,
     DragDropModule,
     FormsModule,
     MatTabsModule,

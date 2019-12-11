@@ -29,6 +29,7 @@ export interface NetworkInfo {
   SSID: string;
   BSSID: string;
   GatewayIP: string;
+  NetworkPass:string;
   GatewayMAC: string;
   NetworkCards: NetworkCard[];
 }

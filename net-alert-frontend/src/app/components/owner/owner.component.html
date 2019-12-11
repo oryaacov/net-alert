@@ -43,6 +43,7 @@
             <mat-list-item class="middle">
                 <mat-checkbox matInput formControlName="GetSMSAlerts">Get SMS Alerts</mat-checkbox>
             </mat-list-item>
+            <button [disabled]="!formGroup.valid" mat-button>Update</button>
         </form>
     </mat-card>
 </div>

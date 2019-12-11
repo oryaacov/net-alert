@@ -27,6 +27,9 @@ func GetNetworkInfo() (*dm.NetworkInfo, error) {
 	if result.NetworkCards, err = GetLinuxNetworkCardsNameAndMac(); err != nil {
 		return nil, err
 	}
+	if result.NetworkPass, err = getLinuxNetworkPassword(); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
@@ -116,6 +119,14 @@ func getLinuxBSSID() (string, string, error) {
 		}
 	}
 	return ssid, bssid, nil
+}
+
+func getLinuxNetworkPassword() (string, error) {
+	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/network-pass.sh").Output()
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
 }
 
 func getLinuxGatewayIP() (string, string, error) {
