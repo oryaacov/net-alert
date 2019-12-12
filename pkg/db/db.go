@@ -26,6 +26,15 @@ func CloseDBConnection(db *gorm.DB) {
 	db.Close()
 }
 
+//GetProfileByMac query profile by mac address
+func GetProfileByMac(mac string, db *gorm.DB) (*dm.Profile, error) {
+	profile := dm.Profile{}
+	if result := db.Preload("Sites").First(&profile, dm.Profile{Mac: mac}); result.Error != nil {
+		return nil, result.Error
+	}
+	return &profile, nil
+}
+
 //GetAllProfiles query with a simple get all query all of the profiles
 func GetAllProfiles(db *gorm.DB) ([]dm.Profile, error) {
 	profiles := []dm.Profile{}

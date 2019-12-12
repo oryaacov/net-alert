@@ -34,7 +34,7 @@ func (s *Server) Start(path string) {
 	s.InitSniffer()
 	defer s.Sniffer.Handler.Close()
 	fmt.Println("done!\ninit http-server...")
-	go s.Sniffer.Analyze(s.DB, s.Config.Sniffer.PcapsFolder)
+	go s.Sniffer.Analyze(s.DB)
 	s.InitGin()
 }
 
