@@ -3,7 +3,10 @@ package sniffer
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/google/gopacket"
@@ -23,7 +26,9 @@ type Sniffer struct {
 }
 
 var (
-	pcapFiles map[string]time.Time = make(map[string]time.Time)
+	pcapFiles               map[string]time.Time = make(map[string]time.Time)
+	lastHandshakePacketTime time.Time
+	hsCounter               int8
 )
 
 func generatePcapFile(folder string) *os.File {
@@ -41,6 +46,54 @@ func createNewPacketWriter(pcapFolder string) *pcapgo.Writer {
 		log.Fatalf("WriteFileHeader: %v", err)
 	}
 	return pcapw
+}
+func containThreeZeros(bytes []byte) bool {
+	return len(bytes) >= 3 && bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0
+}
+
+func isPartOfHandShake(packet gopacket.Packet) bool {
+	initPackets := packet.GetInitialLayers()
+	return len(initPackets) == 6 && initPackets[5] != nil && initPackets[5].LayerType().String() == "SNAP" &&
+		containThreeZeros(initPackets[5].LayerContents())
+}
+
+func detectHandshake(packet gopacket.Packet) bool {
+	if isPartOfHandShake(packet) {
+		if lastHandshakePacketTime.IsZero() || math.Abs(float64(packet.Metadata().Timestamp.Unix()-lastHandshakePacketTime.Unix())) > 1 {
+			lastHandshakePacketTime = packet.Metadata().Timestamp
+			fmt.Println(packet.Metadata().Timestamp)
+			hsCounter = 1
+		} else {
+			hsCounter++
+		}
+	}
+	return hsCounter == 4
+}
+
+func ReadPacketsFromFile(file string) error {
+	macRegexExp, _ := regexp.Compile(`^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$`)
+
+	if handle, err := pcap.OpenOffline(file); err != nil {
+		return err
+	} else {
+		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+		for packet := range packetSource.Packets() {
+			if detectHandshake(packet) {
+				hsCounter = 0
+				if len(packet.Layers()) > 2 {
+					content := strings.Split(fmt.Sprint(packet.Layers()[1]), " ")
+					address := make([]string, 0)
+					for _, s := range content {
+						if macRegexExp.Match([]byte(s)) {
+							address = append(address, s)
+						}
+					}
+					fmt.Println(address)
+				}
+			}
+		}
+	}
+	return nil
 }
 
 //Analyze reciving the raw pcap packets and reading their information
