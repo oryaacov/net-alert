@@ -41,7 +41,7 @@ func (s *Server) Start(path string) {
 //InitSniffer configuring the sniffer and opening the pcap
 func (s *Server) InitSniffer() {
 	var err error
-	s.Sniffer = &sniffer.Sniffer{Device: s.Config.Sniffer.Device, Promiscuous: s.Config.Sniffer.Promiscuous, Timeout: time.Duration(s.Config.Sniffer.Timeout) * time.Second, SnapshotLen: s.Config.Sniffer.SnapshotLen}
+	s.Sniffer = &sniffer.Sniffer{Device: s.Config.Sniffer.Device, Promiscuous: s.Config.Sniffer.Promiscuous, Timeout: time.Duration(s.Config.Sniffer.Timeout) * time.Second, SnapshotLen: s.Config.Sniffer.SnapshotLen, PcapFolder: s.Config.Sniffer.PcapsFolder}
 	s.Sniffer.Handler, err = pcap.OpenLive(s.Sniffer.Device, s.Sniffer.SnapshotLen, s.Sniffer.Promiscuous, s.Sniffer.Timeout)
 	if err != nil {
 		log.Fatal(err)
