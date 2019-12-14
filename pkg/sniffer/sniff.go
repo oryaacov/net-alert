@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"net-alert/pkg/db"
 	"net-alert/pkg/dm"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 	"time"
@@ -29,6 +31,7 @@ type Sniffer struct {
 }
 
 type State struct {
+	db                       *gorm.DB
 	HandshakeFound           bool
 	HandshakeAddresses       []string
 	HandshakedProfile        *dm.Profile
@@ -38,6 +41,10 @@ type State struct {
 	DecryptedPcapFilePath    string
 	DecryptedPcapFile        *os.File
 	ExternalRequestToNewFile bool
+	BSSID                    string
+	SSID                     string
+	PSK                      string
+	DecryptArgs              []string
 }
 
 var (
@@ -57,11 +64,13 @@ func init() {
 
 func generatePcapFile(folder string) *os.File {
 	currentTime := time.Now()
-	f, err := os.Create(fmt.Sprintf("%s/na%d.pcap", folder, currentTime.Unix()))
+	state.CurrentPcapFilePath = fmt.Sprintf("%s/na%d.pcap", folder, currentTime.Unix())
+	f, err := os.Create(state.CurrentPcapFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return f
+
 }
 
 func createNewPacketWriter() *pcapgo.Writer {
@@ -133,15 +142,67 @@ func isPartOfHandShake(packet gopacket.Packet) bool {
 		containThreeZeros(initPackets[5].LayerContents())
 }
 
+func getProfileByHandshakedMac() {
+	profile, err := db.GetProfileByMac(state.HandshakeAddresses[1], state.db)
+	if err != nil {
+		log.Panic(err)
+	}
+	if profile == nil {
+		log.Panic("unknown profile handshake captured")
+	}
+	state.HandshakedProfile = profile
+	log.Println(state.HandshakedProfile, "captured! sniff sniff!")
+	for range time.Tick(time.Second * 5) {
+		go decryptPackets()
+	}
+}
+
+func decryptPackets() {
+	args := strings.Split(fmt.Sprintf("-b %s -e %s -p %s %s", state.BSSID, state.SSID, state.PSK, state.CurrentPcapFilePath), " ")
+	if _, err := exec.Command("/usr/bin/airdecap-ng", args...).Output(); err != nil {
+		log.Panic(err)
+	} else {
+		state.DecryptedPcapFilePath = fmt.Sprintf("%s-dec.pcap", state.CurrentPcapFilePath[:len(state.CurrentPcapFilePath)-5])
+		log.Println(state.DecryptedPcapFilePath)
+	}
+}
+
+func handleHandshakeCapture() {
+	if state.HandshakeAddresses != nil && len(state.HandshakeAddresses) == 3 {
+		_, bssid, _ := GetCurrentSSIDAndBSSID()
+		if strings.ToUpper(bssid) == strings.ToUpper(state.HandshakeAddresses[0]) {
+			go getProfileByHandshakedMac()
+		} else {
+			log.Println("bssid:" + bssid)
+			log.Println(state.HandshakeAddresses)
+			log.Fatal("handshakes from another networks are not allowed.")
+		}
+	} else {
+		log.Print("invalid handshake addresses pattern")
+	}
+}
+
 //Analyze reciving the raw pcap packets and reading their information
 func (sniffer *Sniffer) Analyze(db *gorm.DB) string {
 	var hs bool
+	var err error
+	if state.SSID, state.BSSID, err = GetCurrentSSIDAndBSSID(); err != nil {
+		log.Panic(err)
+	}
+	if state.PSK, err = getLinuxNetworkPassword(); err != nil {
+		log.Panic(err)
+	}
+	state.db = db
 	state.CurrentPcapFolder = sniffer.PcapFolder
+
 	packetSource := gopacket.NewPacketSource(sniffer.Handler, sniffer.Handler.LinkType())
 	for packet := range packetSource.Packets() {
 		writePacketToFile(packet, sniffer.NewCaptureRequest, sniffer.PcapFolder)
-		if hs, state.HandshakeAddresses = handshakeCaptured(packet); hs {
-
+		if !state.HandshakeFound {
+			if hs, state.HandshakeAddresses = handshakeCaptured(packet); hs {
+				state.HandshakeFound = true
+				handleHandshakeCapture()
+			}
 		}
 		// record := &dm.IPV4Record{Src: packet.NetworkLayer().NetworkFlow().Src().String(), Dst: packet.NetworkLayer().NetworkFlow().Dst().String(), TS: time.Now()}
 		// db.Create(record)
