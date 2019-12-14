@@ -6,6 +6,7 @@ import (
 	"math"
 	"net-alert/pkg/db"
 	"net-alert/pkg/dm"
+	"net-alert/pkg/utils"
 	"os"
 	"os/exec"
 	"regexp"
@@ -50,6 +51,7 @@ type State struct {
 	DecryptArgs              []string
 	decMux                   sync.Mutex
 	Captures                 map[string]*dm.IPV4Record
+	master                   *dm.Owner
 }
 
 var (
@@ -241,8 +243,19 @@ func handleNewRecord(record *dm.IPV4Record) {
 		siteIP := strings.ToLower(site.IP)
 		if (siteIP == strings.ToLower(record.Dst) || siteIP == strings.ToLower(record.Src)) &&
 			(siteIP != state.ProfileIPv4 && siteIP != strings.ToLower(state.ProfileIpv6)) {
-			fmt.Println("DONE WITH THE PROJECT YAYAYAYAYAY", siteIP)
+			alertMaster(siteIP)
 		}
+	}
+}
+
+func alertMaster(siteIP string) {
+	msg := fmt.Sprintf("ALERT! Profile %s Surfed to %s!", state.HandshakedProfile.NickName, siteIP)
+	fmt.Printf(msg)
+	if state.master.GetEmailAlerts {
+		utils.SendEmail(state.master.Email, "NET ALERT!", msg)
+	}
+	if state.master.GetSMSAlerts {
+		utils.SendSMS(state.master.Phone, msg)
 	}
 }
 
@@ -262,7 +275,7 @@ func handleHandshakeCapture() {
 }
 
 //Analyze reciving the raw pcap packets and reading their information
-func (sniffer *Sniffer) Analyze(db *gorm.DB) string {
+func (sniffer *Sniffer) Analyze(dbi *gorm.DB) string {
 	var hs bool
 	var err error
 	if state.SSID, state.BSSID, err = GetCurrentSSIDAndBSSID(); err != nil {
@@ -271,7 +284,10 @@ func (sniffer *Sniffer) Analyze(db *gorm.DB) string {
 	if state.PSK, err = getLinuxNetworkPassword(); err != nil {
 		log.Panic(err)
 	}
-	state.db = db
+	state.db = dbi
+	if state.master, err = db.GetOwner(state.db); err != nil {
+		log.Panic(err)
+	}
 	state.CurrentPcapFolder = sniffer.PcapFolder
 	packetSource := gopacket.NewPacketSource(sniffer.Handler, sniffer.Handler.LinkType())
 	for packet := range packetSource.Packets() {

@@ -32,6 +32,17 @@ type Configuration struct {
 		URL                 string `json:"URL"`
 		Port                int    `json:"port"`
 	} `json:"WebServer"`
+	SMS struct {
+		AccountSid string
+		AuthToken  string
+		Number     string
+	} `json:"SMS"`
+	SMTP struct {
+		SMTPServer    string
+		Port          int
+		EmailAddress  string
+		EmailPassword string
+	} `json:"SMTP"`
 }
 
 //ReadConfigutionFromFile reads the netAlert.json configuration file into a struct

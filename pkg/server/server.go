@@ -2,17 +2,17 @@ package server
 
 import (
 	"fmt"
-	"log"
-	"net-alert/pkg/config"
-	"net-alert/pkg/db"
-	"net-alert/pkg/sniffer"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/gopacket/pcap"
 	cors "github.com/itsjamie/gin-cors"
 	"github.com/jinzhu/gorm"
+	"log"
+	"net-alert/pkg/config"
+	"net-alert/pkg/db"
+	"net-alert/pkg/sniffer"
+	"net-alert/pkg/utils"
+	"net/http"
+	"time"
 )
 
 //Server represnt the project core objects at one place
@@ -27,6 +27,10 @@ type Server struct {
 func (s *Server) Start(path string) {
 	fmt.Println("starting net-alert...\nreading configuraion file...")
 	s.Config = config.ReadConfigutionFromFile(path)
+	fmt.Println("done!\ninit twilio SMS client...")
+	utils.InitTwilio(s.Config.SMS.AccountSid, s.Config.SMS.AuthToken, s.Config.SMS.Number)
+	fmt.Println("done!\ninit SMTP client...")
+	utils.InitSMTP(s.Config.SMTP.SMTPServer, s.Config.SMTP.Port, s.Config.SMTP.EmailAddress, s.Config.SMTP.EmailPassword)
 	fmt.Println("done!\ninit db connection...")
 	s.DB = db.InitDB(s.Config)
 	defer s.DB.Close()
