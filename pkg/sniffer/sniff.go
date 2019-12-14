@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/gopacket"
@@ -41,15 +42,21 @@ type State struct {
 	DecryptedPcapFilePath    string
 	DecryptedPcapFile        *os.File
 	ExternalRequestToNewFile bool
+	ProfileIPv4              string
+	ProfileIpv6              string
 	BSSID                    string
 	SSID                     string
 	PSK                      string
 	DecryptArgs              []string
+	decMux                   sync.Mutex
+	Captures                 map[string]*dm.IPV4Record
 }
 
 var (
 	pcapFiles               map[string]time.Time = make(map[string]time.Time)
 	macRegexExp             *regexp.Regexp
+	ipv4RegexExp            *regexp.Regexp
+	ipv6RegexExp            *regexp.Regexp
 	packetWriter            *pcapgo.Writer
 	lastHandshakePacketTime time.Time
 	hsCounter               int8
@@ -60,6 +67,9 @@ var (
 func init() {
 	state = State{}
 	macRegexExp, _ = regexp.Compile(`^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$`)
+	ipv4RegexExp, _ = regexp.Compile(`\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b`)
+	ipv6RegexExp, _ = regexp.Compile(`(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))`)
+	state.Captures = make(map[string]*dm.IPV4Record, 0)
 }
 
 func generatePcapFile(folder string) *os.File {
@@ -128,7 +138,6 @@ func detectHandshake(packet gopacket.Packet) bool {
 	if isPartOfHandShake(packet) {
 		if lastHandshakePacketTime.IsZero() || math.Abs(float64(packet.Metadata().Timestamp.Unix()-lastHandshakePacketTime.Unix())) > 1 {
 			lastHandshakePacketTime = packet.Metadata().Timestamp
-			fmt.Println(packet.Metadata().Timestamp)
 			hsCounter = 1
 		} else {
 			hsCounter++
@@ -145,7 +154,7 @@ func isPartOfHandShake(packet gopacket.Packet) bool {
 func getProfileByHandshakedMac() {
 	profile, err := db.GetProfileByMac(state.HandshakeAddresses[1], state.db)
 	if err != nil {
-		log.Panic(err)
+		log.Panic(err, state.HandshakeAddresses[1])
 	}
 	if profile == nil {
 		log.Panic("unknown profile handshake captured")
@@ -159,11 +168,81 @@ func getProfileByHandshakedMac() {
 
 func decryptPackets() {
 	args := strings.Split(fmt.Sprintf("-b %s -e %s -p %s %s", state.BSSID, state.SSID, state.PSK, state.CurrentPcapFilePath), " ")
+	state.decMux.Lock()
 	if _, err := exec.Command("/usr/bin/airdecap-ng", args...).Output(); err != nil {
+		state.decMux.Unlock()
 		log.Panic(err)
 	} else {
 		state.DecryptedPcapFilePath = fmt.Sprintf("%s-dec.pcap", state.CurrentPcapFilePath[:len(state.CurrentPcapFilePath)-5])
-		log.Println(state.DecryptedPcapFilePath)
+		readPacketsFromFile()
+	}
+}
+
+func readPacketsFromFile() {
+	if handle, err := pcap.OpenOffline(state.DecryptedPcapFilePath); err != nil {
+		if handle != nil {
+			handle.Close()
+		}
+		state.decMux.Unlock()
+		panic(err)
+	} else {
+		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+		for packet := range packetSource.Packets() {
+			if packet != nil && packet.NetworkLayer() != nil {
+				src := packet.LinkLayer().LinkFlow().Src().String()
+				dst := packet.LinkLayer().LinkFlow().Dst().String()
+				if state.HandshakedProfile.Mac == dst || state.HandshakedProfile.Mac == src {
+					if state.ProfileIPv4 == "" && state.ProfileIpv6 == "" {
+						if state.HandshakedProfile.Mac == src {
+							ip := packet.NetworkLayer().NetworkFlow().Src().String()
+							if isIPV4(ip) {
+								state.ProfileIPv4 = ip
+							} else {
+								state.ProfileIpv6 = ip
+							}
+						} else {
+							ip := packet.NetworkLayer().NetworkFlow().Dst().String()
+							if isIPV4(ip) {
+								state.ProfileIPv4 = ip
+							} else {
+								state.ProfileIpv6 = ip
+							}
+						}
+					}
+					record := &dm.IPV4Record{Src: packet.NetworkLayer().NetworkFlow().Src().String(), Dst: packet.NetworkLayer().NetworkFlow().Dst().String(), TS: time.Now()}
+					if !(record.Dst == state.ProfileIPv4 || strings.ToLower(record.Dst) == state.ProfileIpv6) {
+						if _, exists := state.Captures[record.Dst]; !exists {
+							handleNewRecord(record)
+						}
+					}
+				} else {
+					fmt.Println(src, dst, state.HandshakedProfile.Mac)
+				}
+			}
+		}
+		handle.Close()
+		state.decMux.Unlock()
+	}
+}
+
+func isIPV4(ip string) bool {
+	return ipv4RegexExp.Match([]byte(ip))
+}
+
+func isIPV6(ip string) bool {
+	return ipv6RegexExp.Match([]byte(ip))
+}
+
+func handleNewRecord(record *dm.IPV4Record) {
+	state.Captures[record.Dst] = record
+	state.db.Create(record)
+
+	for _, site := range state.HandshakedProfile.Sites {
+		siteIP := strings.ToLower(site.IP)
+		if (siteIP == strings.ToLower(record.Dst) || siteIP == strings.ToLower(record.Src)) &&
+			(siteIP != state.ProfileIPv4 && siteIP != strings.ToLower(state.ProfileIpv6)) {
+			fmt.Println("DONE WITH THE PROJECT YAYAYAYAYAY", siteIP)
+		}
 	}
 }
 
@@ -194,7 +273,6 @@ func (sniffer *Sniffer) Analyze(db *gorm.DB) string {
 	}
 	state.db = db
 	state.CurrentPcapFolder = sniffer.PcapFolder
-
 	packetSource := gopacket.NewPacketSource(sniffer.Handler, sniffer.Handler.LinkType())
 	for packet := range packetSource.Packets() {
 		writePacketToFile(packet, sniffer.NewCaptureRequest, sniffer.PcapFolder)
@@ -204,8 +282,6 @@ func (sniffer *Sniffer) Analyze(db *gorm.DB) string {
 				handleHandshakeCapture()
 			}
 		}
-		// record := &dm.IPV4Record{Src: packet.NetworkLayer().NetworkFlow().Src().String(), Dst: packet.NetworkLayer().NetworkFlow().Dst().String(), TS: time.Now()}
-		// db.Create(record)
 	}
 	return ""
 }
