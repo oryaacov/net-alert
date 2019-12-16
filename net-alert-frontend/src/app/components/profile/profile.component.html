@@ -34,11 +34,11 @@
                         </ul>
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="action">
+                <ng-container class="action-z" matColumnDef="action">
                     <th mat-header-cell *matHeaderCellDef> Action </th>
                     <td mat-cell *matCellDef="let element;let i=index" class="action-link">
-                        <a (click)="openDialog('Update',element,i)">Edit</a> |
-                        <a (click)="openDialog('Delete',element,i)">Delete</a>
+                        <a class="action-z" (click)="openDialog('Update',element,i)">Edit</a> |
+                        <a class="action-z" (click)="openDialog('Delete',element,i)">Delete</a>
                     </td>
                 </ng-container>
 

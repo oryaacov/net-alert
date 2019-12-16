@@ -33,13 +33,16 @@ func (s *Server) GetOwnerInfo() gin.HandlerFunc {
 //CreateOrUpdateProfile create or update mac profile
 func (s *Server) CreateOrUpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		profile := dm.Profile{}
-		if !readBody(c, &profile) {
+		profiles := make([]dm.Profile, 0)
+		if !readBody(c, &profiles) {
 			c.AbortWithStatus(http.StatusBadRequest)
 		}
-		if err := ((&profile).CreateOrUpdate(s.DB)); err != nil {
-			logging.LogError(err)
-			c.AbortWithStatus(http.StatusInternalServerError)
+		for _, profile := range profiles {
+			if err := ((&profile).CreateOrUpdate(s.DB)); err != nil {
+				logging.LogError(err)
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
 		}
 		c.Data(http.StatusOK, "text/html", []byte(""))
 	}

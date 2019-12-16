@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, mergeMap, catchError,tap } from 'rxjs/operators';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
 import { of } from 'rxjs';
 import * as NetAlertActions from './net-alert.actions'
 import { selectProfiles } from './net-alert.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class NetAlertEffects {
@@ -15,7 +16,9 @@ export class NetAlertEffects {
       mergeMap(() => this.dataService.getAllProfiles()
         .pipe(
           map(NetAlertActions.loadProfilesSuccess),
-          catchError(() => of(NetAlertActions.loadProfilesFailure))
+          catchError(err => {
+            this.toasterService.error(err.error)
+            return of(NetAlertActions.loadProfilesFailure(err))})
         )
       )
     )
@@ -27,19 +30,26 @@ export class NetAlertEffects {
       mergeMap(action => this.dataService.updateProfiles(action.payload)
         .pipe(
           map(NetAlertActions.updateProfilesSuccess),
-          catchError(() => of(NetAlertActions.updateProfileFailure))
+          tap(()=>this.toasterService.success("Profiles updated")),
+          catchError(err => {
+            this.toasterService.error(err.error)
+            return of(NetAlertActions.updateProfileFailure(err))
+          })
         )
       )
     )
   );
-  
+
   loadOwner$ = createEffect(() =>
     this.actions$.pipe(
       ofType(NetAlertActions.getOwnerInfo),
       mergeMap(() => this.dataService.getOwner()
         .pipe(
           map(NetAlertActions.loadOwnerSuccess),
-          catchError(() => of(NetAlertActions.loadOwnerFailure))
+          catchError(err => {
+            this.toasterService.error(err.error)
+            return of(NetAlertActions.loadOwnerFailure(err))
+          })
         )
       )
     )
@@ -51,7 +61,10 @@ export class NetAlertEffects {
       mergeMap(action => this.dataService.updateOwner(action.payload)
         .pipe(
           map(NetAlertActions.updateOwnerInfoSuccess),
-          catchError(() => of(NetAlertActions.updateOwnerFailure))
+          tap(()=>this.toasterService.success("Owner updated")),
+          catchError(err => {
+            this.toasterService.error(err.error)
+            return of(NetAlertActions.updateOwnerFailure(err))})
         )
       )
     )
@@ -63,14 +76,17 @@ export class NetAlertEffects {
       mergeMap(() => this.dataService.getNetworkInfo()
         .pipe(
           map(NetAlertActions.loadNetworkInfoSuccess),
-          catchError(() => of(NetAlertActions.loadNetworkInfoFailure))
+          catchError(err => {
+            this.toasterService.error(err.error);
+            return of(NetAlertActions.loadNetworkInfoFailure(err))})
         )
       )
     )
   );
-  
+
   constructor(
     private actions$: Actions,
-    private dataService: DataService
+    private dataService: DataService,
+    private toasterService: ToastrService
   ) { }
 }

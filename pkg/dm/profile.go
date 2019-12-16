@@ -35,7 +35,7 @@ func (p *Profile) CreateOrUpdate(db *gorm.DB) error {
 	}
 	if p.Sites != nil && len(p.Sites) > 0 {
 		for i := 0; i < len(p.Sites); i++ {
-			if err := tx.Where(Site{Nickname: p.Sites[i].Nickname}).Assign(Site{IP: p.Sites[i].IP, Domain: p.Sites[i].Domain, Nickname: p.Sites[i].Nickname, ProfileID: p.Mac}).FirstOrCreate(&p.Sites[i]).Error; err != nil {
+			if err := tx.Where(Site{IP: p.Sites[i].IP}).Assign(Site{IP: p.Sites[i].IP, Domain: p.Sites[i].Domain, Nickname: p.Sites[i].Nickname, ProfileID: p.Mac}).FirstOrCreate(&p.Sites[i]).Error; err != nil {
 				tx.Rollback()
 				return err
 			}

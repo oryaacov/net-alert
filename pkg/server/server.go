@@ -73,6 +73,6 @@ func (s *Server) InitGin() {
 	router.GET("/api/master", s.GetOwnerInfo())
 	router.GET("/api/network", s.GetNetworkInfo())
 	router.GET("/api/profiles", s.GetAllProfiles())
-	router.POST("/api/profile", s.CreateOrUpdateProfile())
+	router.POST("/api/profiles", s.CreateOrUpdateProfile())
 	router.Run(fmt.Sprintf("%s:%d", s.Config.WebServer.URL, s.Config.WebServer.Port))
 }
