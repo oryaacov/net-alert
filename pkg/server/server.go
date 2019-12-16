@@ -71,6 +71,7 @@ func (s *Server) InitGin() {
 
 	router.GET("/api/alive", s.IsAlive())
 	router.GET("/api/master", s.GetOwnerInfo())
+	router.POST("/api/master", s.UpdateOwner())
 	router.GET("/api/network", s.GetNetworkInfo())
 	router.GET("/api/profiles", s.GetAllProfiles())
 	router.POST("/api/profiles", s.CreateOrUpdateProfile())

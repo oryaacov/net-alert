@@ -46,3 +46,26 @@ func (p *Profile) CreateOrUpdate(db *gorm.DB) error {
 	}
 	return nil
 }
+
+//Update update the owner data
+func (o *Owner) Update(db *gorm.DB) error {
+	var owner Owner
+	tx := db.Begin()
+	if err := tx.First(&owner).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	owner.Nickname = o.Nickname
+	owner.Email = o.Email
+	owner.Phone = o.Phone
+	owner.GetEmailAlerts = o.GetEmailAlerts
+	owner.GetSMSAlerts = o.GetSMSAlerts
+	if err := tx.Save(owner).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}

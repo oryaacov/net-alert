@@ -22,9 +22,5 @@ export class AppComponent {
   title = 'net-alert-frontend';
 
   private handleError(err) {
-    if (err) {
-      this.toastr.error('everything is broken', 'Major Error', {
-        timeOut: 3000
-      });    }
   }
 }

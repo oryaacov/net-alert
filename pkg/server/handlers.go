@@ -30,6 +30,22 @@ func (s *Server) GetOwnerInfo() gin.HandlerFunc {
 	}
 }
 
+//UpdateOwner update the master info
+func (s *Server) UpdateOwner() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var owner *dm.Owner
+		if !readBody(c, &owner) {
+			c.AbortWithStatus(http.StatusBadRequest)
+		}
+		if err := ((owner).Update(s.DB)); err != nil {
+			logging.LogError(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		c.Data(http.StatusOK, "text/html", []byte(""))
+	}
+}
+
 //CreateOrUpdateProfile create or update mac profile
 func (s *Server) CreateOrUpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
