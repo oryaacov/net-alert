@@ -35,3 +35,9 @@ export const updateProfiles = createAction('[Profile Component] updateProfiles',
 export const updateProfilesSuccess = createAction('[Profile Component] updateProfilesSuccess');
 export const updateProfileFailure = createAction('[Profile Component] updateProfileFailure', (err: any) => ({ error: err }));
 
+
+//*******start********/
+export const startRequest = createAction('[Main Component] startRequest');
+export const startRequestSuccess = createAction('[Main Component] startRequestSuccess', (res: string) =>
+    ({ payload: res }));
+export const startRequestFailure = createAction('[Main Component] startRequestFailure', (err: any) => ({ error: err }));

@@ -13,15 +13,30 @@
   overflow: visible !important;
 }
 
-
-.github{
-    background-color: white;
-    width: 2rem;
-    height:2rem;
+.github {
+  background-color: white;
+  width: 2rem;
+  height: 2rem;
 }
 
-.footer-bar{
-    position: fixed;
-    bottom: 0;
-    left:50%;
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+}
+
+.button-img {
+  background: transparent;
+  border-color: transparent;
+}
+
+.start-button {
+  width: 5rem;
+  height: 5rem;
+}
+
+.button-holder {
+  text-align: center;
+  display: block;
+  margin-left: 2rem;
 }

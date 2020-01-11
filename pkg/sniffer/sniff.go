@@ -64,6 +64,7 @@ var (
 	hsCounter               int8
 	packetCounter           int64
 	state                   State
+	IsSniffing              bool
 )
 
 func init() {
@@ -91,6 +92,22 @@ func createNewPacketWriter() *pcapgo.Writer {
 		log.Fatalf("WriteFileHeader: %v", err)
 	}
 	return pcapw
+}
+
+func IsOnMonitorMode(deviceMonName string) (bool, error) {
+	out, err := exec.Command("/sbin/iwconfig").Output()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(out), deviceMonName), nil
+}
+
+func StartMonitorMode(device, channel, deviceMonName string) ([]byte, error) {
+	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/monitor.sh", device, channel, deviceMonName).Output()
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func getPacketWriter(pcapFolder string, externalRequest bool) *pcapgo.Writer {
@@ -189,7 +206,9 @@ func readPacketsFromFile() {
 		panic(err)
 	} else {
 		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+		defer handle.Close()
 		for packet := range packetSource.Packets() {
+			fmt.Println(packet.Dump())
 			if packet != nil && packet.NetworkLayer() != nil {
 				src := packet.LinkLayer().LinkFlow().Src().String()
 				dst := packet.LinkLayer().LinkFlow().Dst().String()
@@ -250,7 +269,9 @@ func handleNewRecord(record *dm.IPV4Record) {
 
 func alertMaster(siteIP string) {
 	msg := fmt.Sprintf("ALERT! Profile %s Surfed to %s!", state.HandshakedProfile.NickName, siteIP)
-	fmt.Printf(msg)
+	for i := 0; i < 5; i++ {
+		fmt.Printf(msg)
+	}
 	if state.master.GetEmailAlerts {
 		utils.SendEmail(state.master.Email, "NET ALERT!", msg)
 	}
@@ -288,6 +309,7 @@ func (sniffer *Sniffer) Analyze(dbi *gorm.DB) string {
 	if state.master, err = db.GetOwner(state.db); err != nil {
 		log.Panic(err)
 	}
+	IsSniffing = true
 	state.CurrentPcapFolder = sniffer.PcapFolder
 	packetSource := gopacket.NewPacketSource(sniffer.Handler, sniffer.Handler.LinkType())
 	for packet := range packetSource.Packets() {

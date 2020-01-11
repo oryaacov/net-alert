@@ -18,11 +18,12 @@ type Configuration struct {
 		LogToConsole bool   `json:"logToConsole"`
 	} `json:"Log"`
 	Sniffer struct {
-		Device      string `json:"Device"`
-		Promiscuous bool   `json:"Promiscuous"`
-		SnapshotLen int32  `json:"SnapshotLen"`
-		Timeout     int    `json:"Timeout"`
-		PcapsFolder string `json:"PcapsFolder"`
+		DeviceName    string `json:"DeviceName"`
+		DeviceMonName string `json:"DeviceMonName"`
+		Promiscuous   bool   `json:"Promiscuous"`
+		SnapshotLen   int32  `json:"SnapshotLen"`
+		Timeout       int    `json:"Timeout"`
+		PcapsFolder   string `json:"PcapsFolder"`
 	} `json:"Sniffer"`
 	WebServer struct {
 		AllowedHeaders      string `json:"AllowedHeaders"`

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net-alert/pkg/db"
 	"net-alert/pkg/dm"
 	"net-alert/pkg/logging"
@@ -77,9 +78,44 @@ func (s *Server) GetAllProfiles() gin.HandlerFunc {
 }
 
 //GetNetworkInfo return the machine's network cards, Service set and gateway information
+func (s *Server) Sniff() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var err error
+		res := make([]byte, 0)
+		onMonitorMode, err := sniffer.IsOnMonitorMode(s.Config.Sniffer.DeviceMonName)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to determain if device is on monitor mode"))
+			return
+		}
+		if !onMonitorMode {
+			ch, err := sniffer.GetCurrentChannel(s.Config.Sniffer.DeviceName)
+			if err != nil {
+				c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get current channel"))
+				return
+			}
+			res, err = sniffer.StartMonitorMode(s.Config.Sniffer.DeviceName, ch, s.Config.Sniffer.DeviceMonName)
+			if err != nil {
+				c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to start monitor mode"))
+				return
+			}
+			logging.LogInfo(string(res))
+		}
+		if !sniffer.IsSniffing {
+			res = append(res, []byte("started!")...)
+			fmt.Println("init sniffer & opening pcap...")
+			s.InitSniffer()
+			go s.Sniffer.Analyze(s.DB)
+			c.Data(http.StatusOK, "application/text", res)
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("net alert is already sniffing"))
+		}
+	}
+}
+
+//GetNetworkInfo return the machine's network cards, Service set and gateway information
 func (s *Server) GetNetworkInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if info, err := sniffer.GetNetworkInfo(); err != nil {
+		if info, err := sniffer.GetNetworkInfo(s.Config.Sniffer.DeviceName); err != nil {
 			logging.LogError(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 		} else {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
-import { of } from 'rxjs';
+import { of, pipe } from 'rxjs';
 import * as NetAlertActions from './net-alert.actions'
 import { selectProfiles } from './net-alert.state';
 import { ToastrService } from 'ngx-toastr';
@@ -32,7 +32,8 @@ export class NetAlertEffects {
           map(NetAlertActions.updateProfilesSuccess),
           tap(()=>this.toasterService.success("Profiles updated")),
           catchError(err => {
-            this.toasterService.error(err.error)
+            console.log(err);
+            this.toasterService.error(err.error);
             return of(NetAlertActions.updateProfileFailure(err))
           })
         )
@@ -83,7 +84,19 @@ export class NetAlertEffects {
       )
     )
   );
-
+  startRequest$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(NetAlertActions.startRequest),
+    mergeMap(() => this.dataService.startRequest()
+      .pipe(tap(res=>this.toasterService.success(res)),
+        map(NetAlertActions.startRequestSuccess),
+        catchError(err => {
+          this.toasterService.error(err.error)
+          return of(NetAlertActions.startRequestFailure(err))})
+      )
+    )
+  )
+);
   constructor(
     private actions$: Actions,
     private dataService: DataService,

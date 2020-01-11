@@ -9,6 +9,7 @@ export const initialState: NetAlertState = {
   Profiles: null,
   NetworkInfo: null,
   isLoading: false,
+  isRunning:false,
   error: null,
   Owner:null
 }
@@ -29,6 +30,8 @@ export const netAlertReducer = createReducer<NetAlertState | undefined>(
   on(NetAlertActions.updateProfileFailure,(state,error)=>{return {...state,isLoading:false}}),
   on(NetAlertActions.updateOwnerInfo,(state)=>{return {...state,isLoading:true,error:null}}),
   on(NetAlertActions.updateOwnerInfoSuccess,(state)=>{return {...state,isLoading:false}}),
-  on(NetAlertActions.updateOwnerFailure,(state,error)=>{return {...state,isLoading:false,error:error}})
+  on(NetAlertActions.updateOwnerFailure,(state,error)=>{return {...state,isLoading:false,error:error}}),
+  on(NetAlertActions.startRequest, (state) => { return { ...state, isLoading: true, error: null } }),
+  on(NetAlertActions.startRequestSuccess, (state) => { return { ...state,isRunning:true, isLoading: false, error: null } }),
+  on(NetAlertActions.startRequestFailure,(state,error)=>{return {...state,isLoading:false,error:error}})
   );
-

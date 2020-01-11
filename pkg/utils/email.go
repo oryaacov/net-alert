@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"net-alert/pkg/logging"
+
 	"github.com/go-gomail/gomail"
 )
 
@@ -26,6 +28,6 @@ func SendEmail(to string, title string, body string) {
 	m.SetBody("text/html", body)
 	d := gomail.NewPlainDialer(serverURL, portNumber, emailAccount, emailPassword)
 	if err := d.DialAndSend(m); err != nil {
-		panic(err)
+		logging.LogError(err)
 	}
 }

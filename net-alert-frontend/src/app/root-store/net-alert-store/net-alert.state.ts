@@ -7,6 +7,7 @@ export interface NetAlertState{
   isLoading: boolean;
   error: any;
   NetworkInfo?: NetworkInfo;
+  isRunning:boolean;
   Owner?:Owner;
   Profiles?: Profile[];
 }
@@ -29,6 +30,7 @@ export interface NetworkInfo {
   SSID: string;
   BSSID: string;
   GatewayIP: string;
+  Channel:string;
   NetworkPass:string;
   GatewayMAC: string;
   NetworkCards: NetworkCard[];

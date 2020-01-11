@@ -14,6 +14,10 @@ export class DataService {
     return this.http.get(environment.baseURL+'/profiles');
   }
 
+  startRequest() {
+    return this.http.get(environment.baseURL+'/start',{responseType:"text"});
+  }
+
   updateProfiles(profiles:Profile[]) {
     console.log(profiles);
     return this.http.post(environment.baseURL+'/profiles',profiles);

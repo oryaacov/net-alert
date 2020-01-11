@@ -34,18 +34,15 @@ func (s *Server) Start(path string) {
 	fmt.Println("done!\ninit db connection...")
 	s.DB = db.InitDB(s.Config)
 	defer s.DB.Close()
-	fmt.Println("done!\ninit sniffer & opening pcap...")
-	s.InitSniffer()
-	defer s.Sniffer.Handler.Close()
 	fmt.Println("done!\ninit http-server...")
-	go s.Sniffer.Analyze(s.DB)
+	go openBrowser(fmt.Sprintf("http://%s:%d/site", s.Config.WebServer.URL, s.Config.WebServer.Port))
 	s.InitGin()
 }
 
 //InitSniffer configuring the sniffer and opening the pcap
 func (s *Server) InitSniffer() {
 	var err error
-	s.Sniffer = &sniffer.Sniffer{Device: s.Config.Sniffer.Device, Promiscuous: s.Config.Sniffer.Promiscuous, Timeout: time.Duration(s.Config.Sniffer.Timeout) * time.Second, SnapshotLen: s.Config.Sniffer.SnapshotLen, PcapFolder: s.Config.Sniffer.PcapsFolder}
+	s.Sniffer = &sniffer.Sniffer{Device: s.Config.Sniffer.DeviceMonName, Promiscuous: s.Config.Sniffer.Promiscuous, Timeout: time.Duration(s.Config.Sniffer.Timeout) * time.Second, SnapshotLen: s.Config.Sniffer.SnapshotLen, PcapFolder: s.Config.Sniffer.PcapsFolder}
 	s.Sniffer.Handler, err = pcap.OpenLive(s.Sniffer.Device, s.Sniffer.SnapshotLen, s.Sniffer.Promiscuous, s.Sniffer.Timeout)
 	if err != nil {
 		log.Fatal(err)
@@ -73,6 +70,7 @@ func (s *Server) InitGin() {
 	router.GET("/api/master", s.GetOwnerInfo())
 	router.POST("/api/master", s.UpdateOwner())
 	router.GET("/api/network", s.GetNetworkInfo())
+	router.GET("/api/start", s.Sniff())
 	router.GET("/api/profiles", s.GetAllProfiles())
 	router.POST("/api/profiles", s.CreateOrUpdateProfile())
 	router.Run(fmt.Sprintf("%s:%d", s.Config.WebServer.URL, s.Config.WebServer.Port))

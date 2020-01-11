@@ -1,7 +1,7 @@
 <ngx-loading [show]="isLoading$" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 <div class="image">
     <mat-toolbar class="app-title" style="text-align: center;display: block;">
-        <img class="logo" width="200rem" src="/assets/logo2.png">
+        <img class="logo" width="200rem" src="/site/assets/logo2.png">
     </mat-toolbar>
     <div cdkDropList>
         <mat-grid-list cols="3" rowHeight="1:1">
@@ -15,10 +15,15 @@
                 <app-owner></app-owner>
             </mat-grid-tile>
             <router-outlet></router-outlet>
-
         </mat-grid-list>
     </div>
-    <div class="footer-bar">
+    <div class="button-holder">
+        <button [disabled]="isRunning$" class="button-img" (click)="start()">
+            <img class="start-button" src="assets/start.jpg">
+        </button>
+    </div>
+    
+    <div class="footer-bar"> 
     <a href="https://github.com/oryaacov/net-alert"><img class="github" src="assets/github.png"> </a>
     </div>
 </div>

@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 })
 export class MyNetworkComponent implements OnInit {
 
-  private networkInfo:NetworkInfo
+  public networkInfo:NetworkInfo
   constructor(private store :Store<AppStates>) { 
     
   }

@@ -7,6 +7,7 @@ type NetworkInfo struct {
 	GatewayIP    string
 	GatewayMAC   string
 	NetworkPass  string
+	Channel      string
 	NetworkCards []NetworkCardInfo
 }
 

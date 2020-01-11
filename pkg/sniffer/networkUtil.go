@@ -12,10 +12,14 @@ import (
 var (
 	_getwayIP  = ""
 	_getwayMAC = ""
+	_ssid      = ""
+	_bssid     = ""
+	_psk       = ""
+	_channel   = ""
 )
 
 //GetNetworkInfo gather all of the netword information using the .sh scripts
-func GetNetworkInfo() (*dm.NetworkInfo, error) {
+func GetNetworkInfo(device string) (*dm.NetworkInfo, error) {
 	var err error
 	var result dm.NetworkInfo
 	if result.SSID, result.BSSID, err = GetCurrentSSIDAndBSSID(); err != nil {
@@ -28,6 +32,9 @@ func GetNetworkInfo() (*dm.NetworkInfo, error) {
 		return nil, err
 	}
 	if result.NetworkPass, err = getLinuxNetworkPassword(); err != nil {
+		return nil, err
+	}
+	if result.Channel, err = GetCurrentChannel(device); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -45,7 +52,28 @@ func GetCurrentSSIDAndBSSID() (string, string, error) {
 	default:
 		return "", "", fmt.Errorf("unhandeled OS %s", runtime.GOOS)
 	}
+}
 
+func GetCurrentChannel(device string) (string, error) {
+	if len(_channel) > 0 {
+		return _channel, nil
+	}
+	out, err := exec.Command("/sbin/iwlist", "channel").Output()
+	if err != nil {
+		fmt.Println(err.Error())
+		return "", err
+	}
+	output := string(out)
+	i := strings.Index(string(output), "wlp2s0")
+	if i > -1 {
+		output = output[i:]
+		if strings.Contains(output, "(Channel") {
+			_channel = output[strings.Index(output, "(Channel")+8 : strings.Index(output, ")")]
+			return _channel, nil
+		}
+
+	}
+	return "", nil
 }
 
 //GetDefualtGetwayMacAddresss return the def
@@ -98,7 +126,10 @@ func GetLinuxNetworkCardsNameAndMac() ([]dm.NetworkCardInfo, error) {
 }
 
 func getLinuxBSSID() (string, string, error) {
-	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/bssid.sh").Output()
+	if len(_bssid) > 0 && len(_ssid) > 0 {
+		return _ssid, _bssid, nil
+	}
+	out, err := exec.Command("/bin/bash", "./scripts/bssid.sh").Output()
 	if err != nil {
 		panic(err)
 	}
@@ -106,31 +137,34 @@ func getLinuxBSSID() (string, string, error) {
 	if res == nil || len(res) == 0 {
 		return "", "", errors.New("failed to obtain gatway ip & mac address")
 	}
-	var ssid, bssid string
 	for _, s := range res {
 		if len(s) > 0 {
-			if len(ssid) == 0 {
-				ssid = s
-			} else if len(bssid) == 0 {
-				bssid = s
+			if len(_ssid) == 0 {
+				_ssid = s
+			} else if len(_bssid) == 0 {
+				_bssid = s
 			} else {
 				break
 			}
 		}
 	}
-	return ssid, bssid, nil
+	return _ssid, _bssid, nil
 }
 
 func getLinuxNetworkPassword() (string, error) {
-	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/network-pass.sh").Output()
+	if len(_psk) > 0 {
+		return _psk, nil
+	}
+	out, err := exec.Command("/bin/bash", "./scripts/network-pass.sh").Output()
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimSpace(string(out)), nil
+	_psk = strings.TrimSpace(string(out))
+	return _psk, nil
 }
 
 func getLinuxGatewayIP() (string, string, error) {
-	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/gateway.sh").Output()
+	out, err := exec.Command("/bin/bash", "./scripts/gateway.sh").Output()
 	if err != nil {
 		panic(err)
 	}

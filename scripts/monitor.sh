@@ -1,4 +1,4 @@
 sudo airmon-ng check kill
-sudo airmon-ng start wlx002127fd59f3
-sudo ip link set wlan0mon up    
+sudo airmon-ng start $1 $2
+sudo ip link set $3 up    
 sudo systemctl start NetworkManager

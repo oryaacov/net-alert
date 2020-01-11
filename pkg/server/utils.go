@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"net-alert/pkg/logging"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,4 +20,12 @@ func readBody(c *gin.Context, req interface{}) bool {
 		return false
 	}
 	return true
+}
+
+func openBrowser(url string) {
+	if err := exec.Command("/usr/bin/xdg-open", url).Start(); err != nil {
+		logging.LogError(err)
+	} else {
+		logging.LogInfo(url)
+	}
 }
