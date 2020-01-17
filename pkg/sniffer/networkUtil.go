@@ -64,7 +64,7 @@ func GetCurrentChannel(device string) (string, error) {
 		return "", err
 	}
 	output := string(out)
-	i := strings.Index(string(output), "wlp2s0")
+	i := strings.Index(string(output), device)
 	if i > -1 {
 		output = output[i:]
 		if strings.Contains(output, "(Channel") {

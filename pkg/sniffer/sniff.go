@@ -6,6 +6,7 @@ import (
 	"math"
 	"net-alert/pkg/db"
 	"net-alert/pkg/dm"
+	"net-alert/pkg/logging"
 	"net-alert/pkg/utils"
 	"os"
 	"os/exec"
@@ -103,7 +104,7 @@ func IsOnMonitorMode(deviceMonName string) (bool, error) {
 }
 
 func StartMonitorMode(device, channel, deviceMonName string) ([]byte, error) {
-	out, err := exec.Command("/bin/bash", "/home/brain/Projects/src/net-alert/scripts/monitor.sh", device, channel, deviceMonName).Output()
+	out, err := exec.Command("/bin/bash", "./scripts/monitor.sh", device, channel, deviceMonName).Output()
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +209,6 @@ func readPacketsFromFile() {
 		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 		defer handle.Close()
 		for packet := range packetSource.Packets() {
-			fmt.Println(packet.Dump())
 			if packet != nil && packet.NetworkLayer() != nil {
 				src := packet.LinkLayer().LinkFlow().Src().String()
 				dst := packet.LinkLayer().LinkFlow().Dst().String()
@@ -237,7 +237,7 @@ func readPacketsFromFile() {
 						}
 					}
 				} else {
-					fmt.Println(src, dst, state.HandshakedProfile.Mac)
+					//	fmt.Println(src, dst, state.HandshakedProfile.Mac)
 				}
 			}
 		}
@@ -277,6 +277,23 @@ func alertMaster(siteIP string) {
 	}
 	if state.master.GetSMSAlerts {
 		utils.SendSMS(state.master.Phone, msg)
+	}
+}
+
+func Exit(device string) {
+	mon, err := IsOnMonitorMode(device)
+	if err != nil {
+		logging.LogError(err)
+		return
+	}
+	if mon {
+		out, err := exec.Command("/bin/bash", "./scripts/close-monitor.sh", device).Output()
+		if err != nil {
+			logging.LogError(err)
+		}
+		logging.LogInfo(string(out))
+	} else {
+		logging.LogInfo("out of monitor mode")
 	}
 }
 

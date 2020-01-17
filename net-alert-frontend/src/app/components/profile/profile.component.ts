@@ -15,7 +15,7 @@ export class ProfileComponent implements OnInit {
   @ViewChild(MatTable, {static:true}) table: MatTable<any>;
  
   dataSource: Profile[]=[];
-  displayedColumns: string[] = ['mac', 'name', 'sites','created_at', 'action'];
+  displayedColumns: string[] = ['action','mac', 'name', 'sites', 'created_at'];
   backup:any;
   constructor(private store: Store<AppStates>,public dialog: MatDialog) {
   }

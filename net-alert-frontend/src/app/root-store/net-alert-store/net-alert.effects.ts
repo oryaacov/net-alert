@@ -17,7 +17,8 @@ export class NetAlertEffects {
         .pipe(
           map(NetAlertActions.loadProfilesSuccess),
           catchError(err => {
-            this.toasterService.error(err.error)
+            console.log(err)
+            this.toasterService.error("Failed to load profiles")
             return of(NetAlertActions.loadProfilesFailure(err))})
         )
       )
@@ -30,10 +31,10 @@ export class NetAlertEffects {
       mergeMap(action => this.dataService.updateProfiles(action.payload)
         .pipe(
           map(NetAlertActions.updateProfilesSuccess),
-          tap(()=>this.toasterService.success("Profiles updated")),
+          tap(()=>this.toasterService.success("Profiles saved")),
           catchError(err => {
             console.log(err);
-            this.toasterService.error(err.error);
+            this.toasterService.error("Failed to update profiles");
             return of(NetAlertActions.updateProfileFailure(err))
           })
         )
@@ -48,7 +49,8 @@ export class NetAlertEffects {
         .pipe(
           map(NetAlertActions.loadOwnerSuccess),
           catchError(err => {
-            this.toasterService.error(err.error)
+            console.log(err)
+            this.toasterService.error("Failed to load Owner")
             return of(NetAlertActions.loadOwnerFailure(err))
           })
         )
@@ -64,7 +66,8 @@ export class NetAlertEffects {
           map(NetAlertActions.updateOwnerInfoSuccess),
           tap(()=>this.toasterService.success("Owner updated")),
           catchError(err => {
-            this.toasterService.error(err.error)
+            console.log(err)
+            this.toasterService.error("Failed to update Owner")
             return of(NetAlertActions.updateOwnerFailure(err))})
         )
       )
@@ -78,7 +81,8 @@ export class NetAlertEffects {
         .pipe(
           map(NetAlertActions.loadNetworkInfoSuccess),
           catchError(err => {
-            this.toasterService.error(err.error);
+            console.log(err)
+            this.toasterService.error("Failed to load network info");
             return of(NetAlertActions.loadNetworkInfoFailure(err))})
         )
       )
@@ -91,7 +95,8 @@ export class NetAlertEffects {
       .pipe(tap(res=>this.toasterService.success(res)),
         map(NetAlertActions.startRequestSuccess),
         catchError(err => {
-          this.toasterService.error(err.error)
+          console.log(err)
+          this.toasterService.error("Failed to start sniffer")
           return of(NetAlertActions.startRequestFailure(err))})
       )
     )

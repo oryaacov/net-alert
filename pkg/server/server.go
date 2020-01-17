@@ -39,6 +39,11 @@ func (s *Server) Start(path string) {
 	s.InitGin()
 }
 
+//Exit capture the interupt signal and close monitor mode
+func (s *Server) Exit() {
+	sniffer.Exit(s.Config.Sniffer.DeviceMonName)
+}
+
 //InitSniffer configuring the sniffer and opening the pcap
 func (s *Server) InitSniffer() {
 	var err error
